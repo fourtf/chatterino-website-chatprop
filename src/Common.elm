@@ -47,7 +47,8 @@ type alias Split =
 
 
 type alias Message =
-    { time : Posix
+    { key : String
+    , time : Posix
     , user : String
     , text : String
     , emote : String
@@ -76,10 +77,16 @@ defaultTabs =
 
 randomMessage : Posix -> Generator Message
 randomMessage time =
-    Random.map
-        (\emoteIndex -> Message time "asd" "asd" <| Maybe.withDefault "" <| Array.get emoteIndex emotes)
-    <|
-        Random.int 0 (Array.length emotes - 1)
+    Random.map2
+        (\emoteIndex key ->
+            let
+                emote =
+                    Maybe.withDefault "" <| Array.get emoteIndex emotes
+            in
+            Message (String.fromInt key) time "asd" "asd" emote
+        )
+        (Random.int 0 (Array.length emotes - 1))
+        (Random.int Random.minInt Random.maxInt)
 
 
 listMaxLength : Int -> List a -> List a

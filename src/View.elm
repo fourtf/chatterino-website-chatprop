@@ -3,6 +3,7 @@ module View exposing (..)
 import Common exposing (Message, Model, Msg, Split, Tab, TabStatus(..))
 import Html exposing (Html, div, img, span, text)
 import Html.Attributes exposing (class, src)
+import Html.Keyed
 import Time
 
 
@@ -66,7 +67,9 @@ viewSplitHeader split =
 
 viewSplitContent : Split -> Html Msg
 viewSplitContent split =
-    div [ class "c-split-content" ] (List.map viewMessage split.messages)
+    Html.Keyed.node "div"
+        [ class "c-split-content" ]
+        (List.map (\m -> ( m.key, viewMessage m )) split.messages)
 
 
 viewMessage : Message -> Html msg
