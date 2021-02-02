@@ -2,7 +2,7 @@ module View exposing (..)
 
 import Common exposing (Message, Model, Msg, Split, Tab, TabStatus(..))
 import Html exposing (Html, div, img, span, text)
-import Html.Attributes exposing (class, src)
+import Html.Attributes exposing (class, src, style)
 import Html.Keyed
 import Time
 
@@ -72,13 +72,16 @@ viewSplitContent split =
         (List.map (\m -> ( m.key, viewMessage m )) split.messages)
 
 
-viewMessage : Message -> Html msg
+viewMessage : Message -> Html Msg
 viewMessage message =
     div [ class "c-message" ]
         [ span [ class "c-timestamp" ] [ text <| formatTime message.time ]
-        , span [ class "c-username" ] [ text <| message.user ++ ":" ]
+        , span [ class "c-username", style "color" message.userColor ] [ text <| message.user ++ ":" ]
         , span [] [ text message.text ]
-        , img [ src <| "emotes/" ++ message.emote ++ ".png", class "c-emote-2x" ] []
+        , maybe <|
+            Maybe.map
+                (\e -> img [ src <| "emotes/" ++ e ++ ".png", class "c-emote-2x" ] [])
+                message.emote
         ]
 
 
@@ -98,3 +101,8 @@ viewSplitInput : Split -> Html Msg
 viewSplitInput _ =
     div [ class "c-split-input" ]
         [ text "" ]
+
+
+maybe : Maybe (Html Msg) -> Html Msg
+maybe =
+    Maybe.withDefault <| text ""

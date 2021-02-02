@@ -36,7 +36,7 @@ view =
 
 subscriptions : Model -> Sub Msg
 subscriptions _ =
-    Time.every 1000 GenerateMessage
+    Time.every 1000 MaybeGenerateMessage
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -45,8 +45,11 @@ update msg model =
         InitTime ( zone, now ) ->
             ( { model | zone = zone }, generate InitMessages (Random.list maxMessageCount <| randomMessage now) )
 
-        GenerateMessage t ->
-            ( model, generate AddMessage <| randomMessage t )
+        MaybeGenerateMessage t ->
+            ( model, generate (GenerateMessage t) <| (Random.map (\x -> x < 0.3) <| Random.float 0 1) )
+
+        GenerateMessage t shouldAdd ->
+            ( model, maybeGenerateMessage t shouldAdd )
 
         AddMessage message ->
             ( addMessage message model, Cmd.none )
@@ -55,8 +58,13 @@ update msg model =
             ( initMessages messages model, Cmd.none )
 
 
+maybeGenerateMessage : Time.Posix -> Bool -> Cmd Msg
+maybeGenerateMessage t shouldAdd =
+    if shouldAdd then
+        generate AddMessage <| randomMessage t
 
--- ACTIONS
+    else
+        Cmd.none
 
 
 addMessage : Message -> Model -> Model

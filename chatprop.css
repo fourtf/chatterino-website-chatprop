@@ -95,6 +95,7 @@ html {
 }
 .c-split-header > div {
   padding: 0 8px;
+  margin: 0 auto;
 }
 
 .c-split-content {
@@ -126,6 +127,7 @@ html {
 .c-message {
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   align-items: center;
   padding: 1px 12px;
 }
